@@ -49,10 +49,14 @@ optional arguments:
 
 ### 4. Configure UDP Logger in Loxone
 Loxone Config > Miniserver > Messages > Create new Logger
-'Address of logger /dev/udp/192.168.1.222/2222'
+`Address of logger /dev/udp/192.168.1.222/2222`
 (insert IP and port where the script is listening for UDP packets) 
 
 ![01](/pics/01.png)
 
 ### 5. Assign logger to a perifery or block in Loxone
-All periferies (inputs and outputs) and most block allow you to assign a logger to them. Just search for 'Logging/Mail/Call/Track' in the properties tab. Also set the 'Message when ON/analogue changes' and 'Message when OFF'
+All periferies (inputs and outputs) and most block allow you to assign a logger to them. Just search for `Logging/Mail/Call/Track` in the properties tab. Also set the `Message when ON/analogue changes` and `Message when OFF`
+
+![02](/pics/02.png)
+
+That's it! There is no need to mess with UUIDs, logins, users and permissions. If you need to log more data, simply repeat step 5 for other inputs,, outputs or blocks. Your measurements will appear in InfluxDB / Grafana under the same `Name` (or `Description`) you gave them iin Loxone Config.
