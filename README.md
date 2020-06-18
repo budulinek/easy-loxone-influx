@@ -1,5 +1,6 @@
-# simple-loxone-influx
-Simple Loxone to InfluxDB script
+# easy-loxone-influx
+
+
 
 ## What?
 
