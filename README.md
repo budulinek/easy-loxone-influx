@@ -55,8 +55,29 @@ Loxone Config > Miniserver > Messages > Create new Logger
 ![01](/pics/01.png)
 
 ### 5. Assign logger to a perifery or block in Loxone
-All periferies (inputs and outputs) and most block allow you to assign a logger to them. Just search for `Logging/Mail/Call/Track` in the properties tab. Also set the `Message when ON/analogue changes` and `Message when OFF`
+All periferies (inputs and outputs) and most block allow you to assign a logger to them. Just search for `Logging/Mail/Call/Track` in the properties tab and assign your newly created logger. Also set the `Message when ON/analogue changes` and `Message when OFF`
 
 ![02](/pics/02.png)
 
-That's it! There is no need to mess with UUIDs, logins, users and permissions. If you need to log more data, simply repeat step 5 for other inputs,, outputs or blocks. Your measurements will appear in InfluxDB / Grafana under the same `Name` (or `Description`) you gave them iin Loxone Config.
+That's it! There is no need to mess with UUIDs, logins, users and permissions. If you need to log more data, simply repeat step 5 for other inputs, outputs or blocks. Your measurements will appear in InfluxDB / Grafana under the `Name` (or `Description`) specified in Loxone Config.
+
+### 6. Custom measurement name (optional)
+If you want to give your measurement in InfluxDB/Grafana custom name (different from `Name` you use in Loxone), just edit `Message when ON/analogue changes` and `Message when OFF`. Add your custom name, followed by colon before value, for example
+
+![03](/pics/03.png)
+
+### 7. Custom tags (optional)
+You can also add up to three custom tags to your measurements which will be shown in InfluxDB/Grafana as Tag_1, Tag_2 and Tag_3. Since Loxone UDP logger does not record Room or Category, you can use custom tags to add them manually. Again, edit `Message when ON/analogue changes` and `Message when OFF`. Add your tags after value, separated by semicolon. You can for example set Tag_1 and Tag_2:
+
+`<v.1>;Lights;Kitchen`
+
+or just Tag_3:
+
+`<v.1>;;;My house`
+
+### 8. Periodic logging
+UDP logs are sent whenever the perifery (input or output) or block change their value. This is fine for analog values which change frequently. However, for some critical digital values (or analog values with infrequent changes) we need periodic checks in order to make our readings more reliable. Loxone does not offer periodic logging, but we can use a workaround with `Analogue Memory` and `Pulse Generator`. Grab your InfluxDB logger and build the following schema. Set the period in pulse generator and the attached logger will send an UDP log periodically, even if the digital or analog value attached to the memory does not change.
+However, there is one problem with this solution: Loxone will use the name of the logger (in our case `InfluxDB`) in the UDP log message. Therefore, you MUST use custom measurement name (see step 6):
+
+![04](/pics/04.png)
+
