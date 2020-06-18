@@ -7,7 +7,7 @@ This scripts listens for Loxone statistics sent via UDP log and inserts the data
 
 It is very easy to setup and use. While the script requires manual installation, the subsequent configuration of individual measurements and statistics is done through Loxone Config.
 
-All credits go to 
+All credits go to Jan De Bock. This is just a polished version of his original script: https://groups.google.com/forum/#!topic/loxone-english/ijOUU8FHMKA
 
 ## How?
 
@@ -48,7 +48,11 @@ optional arguments:
 * Remember - the script is not failsafe. It will simply crash if it receives data in wrong format. So you need systemd service with both autostart and restart after failure.
 
 ### 4. Configure UDP Logger in Loxone
-
 Loxone Config > Miniserver > Messages > Create new Logger
-Address of logger: '/dev/udp/192.168.1.222/2222'
+'Address of logger /dev/udp/192.168.1.222/2222'
 (insert IP and port where the script is listening for UDP packets) 
+
+![01](/pics/01.png)
+
+### 5. Assign logger to a perifery or block in Loxone
+All periferies (inputs and outputs) and most block allow you to assign a logger to them. Just search for 'Logging/Mail/Call/Track' in the properties tab. Also set the 'Message when ON/analogue changes' and 'Message when OFF'
