@@ -62,15 +62,15 @@ All peripheries (inputs and outputs) and most block allow you to assign a logger
 
 That's it! There is no need to mess with UUIDs, users and permissions. Within InfluxDB / Grafana, you will find your measurements under the `Name` (or `Description`) specified in Loxone Config.
 
-Now go ahead and add few more measurements! There are actually 2 ways how to send data via a logger in Loxone Config:
-1. Edit the `Logging/Mail/Call/Track` section in the properties tab of your periphery (input/output) or a block. This is a prefered solution.
+Now go ahead and add few more measurements! There are actually 2 ways how to do that:
+1. Edit the `Logging/Mail/Call/Track` section in the properties tab of your periphery (input/output) or a block. This is a prefered solution which we use here in step 5.
 2. Drag and drop the logger into your program (see step 8). 
 
-If you have a lot of measurements assigned to a logger, it is good to double check the names, aliases and tags of your measurements. Find your InfluxDB logger under the periphery tree, highlight all items attached to the logger and then hit `Edit shared properties...` in the properties tab.  
+If you have a lot of measurements assigned to a logger, it is a good idea to double check the names, aliases and tags of your measurements. Find your InfluxDB logger under the periphery tree, highlight all items attached to the logger and then hit `Edit shared properties...` in the properties tab.  
 
 ![06](/pics/06.png)
 
-Here you will get a nice overview of all names (see columns `Name` and `Description`), aliases and tags (see columns `Message when ON/analogue changes` and `Message when Off`) of all measurements sent to InfluxDB. You can edit them. Make sure, that each measurement is uniquelly identified. Usually this is done through unique `Name` or `Description`, but if you "Drag and drop" the logger into your program, you must set custom alias.
+Here you will get a nice overview of all names (see columns `Name` and `Description`), aliases and tags (see columns `Message when ON/analogue changes` and `Message when Off`) of all measurements sent to InfluxDB. You can edit them. Make sure that each measurement is uniquely identified. Usually this is done through unique `Name` or `Description`, but if you "Drag and drop" the logger into your program, you must set custom alias.
 
 ### 6. Custom alias (optional)
 If you want to give your measurement in InfluxDB/Grafana some custom name (different from `Name` or `Description` you use in Loxone), just edit `Message when ON/analogue changes` and `Message when OFF`. Add your alias (followed by colon) before value, for example
