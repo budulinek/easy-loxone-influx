@@ -60,7 +60,17 @@ All peripheries (inputs and outputs) and most block allow you to assign a logger
 
 ![02](/pics/02.png)
 
-That's it! There is no need to mess with UUIDs, logins, users and permissions. If you need to log more data, simply repeat step 5 for other inputs, outputs or blocks. Within Loxone, under the periphery tree you will have a nice overview of all items sent via your InfluxDB logger. Within InfluxDB / Grafana, you will find your measurements under the `Name` (or `Description`) specified in Loxone Config.
+That's it! There is no need to mess with UUIDs, users and permissions. Within InfluxDB / Grafana, you will find your measurements under the `Name` (or `Description`) specified in Loxone Config.
+
+Now go ahead and add few more measurements! There are actually 2 ways how to send data via a logger in Loxone Config:
+1. Edit the `Logging/Mail/Call/Track` section in the properties tab of your periphery (input/output) or a block. This is a prefered solution.
+2. Drag and drop the logger into your program (see step 8). 
+
+If you have a lot of measurements assigned to a logger, it is good to double check the names, aliases and tags of your measurements. Find your InfluxDB logger under the periphery tree, highlight all items attached to the logger and then hit `Edit shared properties...` in the properties tab.  
+
+![06](/pics/06.png)
+
+Here you will get a nice overview of all names (see columns `Name` and `Description`), aliases and tags (see columns `Message when ON/analogue changes` and `Message when Off`) of all measurements sent to InfluxDB. You can edit them. Make sure, that each measurement is uniquelly identified. Usually this is done through unique `Name` or `Description`, but if you "Drag and drop" the logger into your program, you must set custom alias.
 
 ### 6. Custom alias (optional)
 If you want to give your measurement in InfluxDB/Grafana some custom name (different from `Name` or `Description` you use in Loxone), just edit `Message when ON/analogue changes` and `Message when OFF`. Add your alias (followed by colon) before value, for example
@@ -78,7 +88,7 @@ or just Tag_3:
 
 ### 8. Periodic logging
 UDP logs are sent whenever the perifery (input or output) or block change their value. This is fine for analog values which change frequently. However, for some critical digital values (or analog values with infrequent changes) we need periodic checks in order to make our readings more reliable. Loxone does not offer periodic logging, but we can use a workaround with `Analogue Memory` and `Pulse Generator`. Grab your InfluxDB logger and build the following schema. Set the period in pulse generator and the attached logger will send the UDP log periodically, even if the digital or analog value attached to the memory does not change.
-However, there is one problem with this solution: Loxone will use the name of the logger (in our case "InfluxDB") as a measurement name in the UDP log message. Therefore, you MUST use alias (see step 6):
+However, there is one problem with this solution: Loxone will use the name of the logger (in our case "InfluxDB") as a measurement name in the UDP log message. Therefore, you MUST use alias in order to assign a unique name to your measurement (see step 6):
 
 ![04](/pics/04.png)
 
