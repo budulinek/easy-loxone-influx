@@ -106,4 +106,5 @@ But Loxone Config actually allows you to build the whole UDP log message dynamic
 ![05](/pics/05.png)
 
 The config means that AI1 will be used as "original" measurement name, AI2 is an alias  (overriding original name), AI3 is parsed as value and anything sent via AI4 (digital/analog/textual data) is parsed as Tag_1. Wondering how you set Tag_2 and Tag_3? No problem, `Status` block has a text output (`TQ`), so you can chain them. Link as many `Status` block as you want. Then assign an InfluxDB logger to the last `Status` block in the chain. 
+
 In addition, you can set different `Status-text` for different combinations of conditions. So the composition of the UDP message will depend in the value of the inputs A1-A4 (you can use this feature to compose your own error messages).
