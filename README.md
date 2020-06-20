@@ -62,8 +62,8 @@ All peripheries (inputs and outputs) and most block allow you to assign a logger
 
 That's it! There is no need to mess with UUIDs, logins, users and permissions. If you need to log more data, simply repeat step 5 for other inputs, outputs or blocks. Within Loxone, under the periphery tree you will have a nice overview of all items sent via your InfluxDB logger. Within InfluxDB / Grafana, you will find your measurements under the `Name` (or `Description`) specified in Loxone Config.
 
-### 6. Custom measurement name (optional)
-If you want to give your measurement in InfluxDB/Grafana some custom name (different from `Name` or `Description` you use in Loxone), just edit `Message when ON/analogue changes` and `Message when OFF`. Add your custom name (followed by colon) before value, for example
+### 6. Custom alias (optional)
+If you want to give your measurement in InfluxDB/Grafana some custom name (different from `Name` or `Description` you use in Loxone), just edit `Message when ON/analogue changes` and `Message when OFF`. Add your alias (followed by colon) before value, for example
 
 ![03](/pics/03.png)
 
@@ -78,7 +78,7 @@ or just Tag_3:
 
 ### 8. Periodic logging
 UDP logs are sent whenever the perifery (input or output) or block change their value. This is fine for analog values which change frequently. However, for some critical digital values (or analog values with infrequent changes) we need periodic checks in order to make our readings more reliable. Loxone does not offer periodic logging, but we can use a workaround with `Analogue Memory` and `Pulse Generator`. Grab your InfluxDB logger and build the following schema. Set the period in pulse generator and the attached logger will send the UDP log periodically, even if the digital or analog value attached to the memory does not change.
-However, there is one problem with this solution: Loxone will use the name of the logger (in our case "InfluxDB") as a measurement name in the UDP log message. Therefore, you MUST use custom measurement name (see step 6):
+However, there is one problem with this solution: Loxone will use the name of the logger (in our case "InfluxDB") as a measurement name in the UDP log message. Therefore, you MUST use alias (see step 6):
 
 ![04](/pics/04.png)
 
@@ -87,12 +87,13 @@ If your pulse generator is really fast, you will need to decrease `Minimum time 
 ### 9. ... and some more advanced stuff for the brave ones ...
 The syntax of the UDP log message parsed by my python script looks like this:
 
-`<timestamp>;<measurement_name>;<custom_measurement_name(optional)>:<value>;<tag_1(optional)>;<tag_2(optional)>;<tag_3(optional)>`
+`<timestamp>;<measurement_name>;<alias(optional)>:<value>;<tag_1(optional)>;<tag_2(optional)>;<tag_3(optional)>`
 
-Timestamp is always set by Loxone. Measurement name is determined by Loxone, based on `Name` or `Description` in the properties of your periphery. Then we use custom measurement name to override the original one (see step 6). Value is set dynamically, using the built-in syntax of the Loxone Config (for example `<v.1>` - see step 5). Then we have manually set tags (see step 7). 
+Timestamp is always set by Loxone. Measurement name is determined by Loxone, based on `Name` or `Description` in the properties of your periphery. Then we can manually set an alias, overriding the original measurement name (see step 6). Value is set dynamically, using the built-in syntax of the Loxone Config (for example `<v.1>` - see step 5). Then we can manually set tags (see step 7). 
 
 But Loxone Config actually allows you to build the whole UDP log message dynamically (with the sole exception of the timestamp), through the `Status` block. Each `Status` block has 4 inputs (AI1 - AI4) which accept digital, analog but also text data. Have a look at this configuration of the `Status` block (be careful about colons and semicolons):
 
 ![05](/pics/05.png)
 
-The config means that AI1 will be used as "original" measurement name, AI2 is a custom name  (overriding original one in my script), AI3 is parsed as value and anything sent via AI4 (digital/analog/textual data) is parsed as Tag_1. Wondering how you set Tag_2 and Tag_3? No problem, `Status` block has a text output (`TQ`), so you can chain them. Link as many `Status` block as you want. Then assign a InfluxDB logger to the last `Status` block in the chain. In addition, you can set different `Status-text` for combinations of conditions in the configs of each of these blocks...
+The config means that AI1 will be used as "original" measurement name, AI2 is an alias  (overriding original name), AI3 is parsed as value and anything sent via AI4 (digital/analog/textual data) is parsed as Tag_1. Wondering how you set Tag_2 and Tag_3? No problem, `Status` block has a text output (`TQ`), so you can chain them. Link as many `Status` block as you want. Then assign an InfluxDB logger to the last `Status` block in the chain. 
+In addition, you can set different `Status-text` for different combinations of conditions. So the composition of the UDP message will depend in the value of the inputs A1-A4 (you can use this feature to compose your own error messages).
