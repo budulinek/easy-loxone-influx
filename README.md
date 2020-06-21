@@ -90,9 +90,11 @@ or just Tag_3:
 UDP logs are sent whenever the perifery (input or output) or block change their value. This is fine for analog values which change frequently. However, for some critical digital values (or analog values with infrequent changes) we need periodic checks in order to make our readings more reliable. Loxone does not offer periodic logging, but we can use a workaround with `Analogue Memory` and `Pulse Generator`. Grab your InfluxDB logger and build the following schema. Set the period in pulse generator and the attached logger will send the UDP log periodically, even if the digital or analog value attached to the memory does not change.
 However, there is one problem with this solution: Loxone will use the name of the logger (in our case "InfluxDB") as a measurement name in the UDP log message. Therefore, you MUST use alias in order to assign a unique name to your measurement (see step 6):
 
-![04](/pics/04.png)
+![04](/pics/04a.png)
 
-If your pulse generator is really fast, you will need to decrease `Minimum time interval`. Since we are configuring everything inside Loxone Config, you can even change the logging period dynamically, simply by attaching some program to `TL` input (parameter) of the pulse generator.
+If your pulse generator is really fast, you will need to decrease `Minimum time interval`. 
+
+Since we are configuring everything inside Loxone Config, you can even change the logging period dynamically. In the example above, we can for example set the loging period down to 10s and disable the pulse generator when the front door is closed. Or we can attach a more sofisticated program to the `TL` input (parameter) of the pulse generator: set the pulse period to 1 hour when the front door is closed and 10s when the door is open. With this setup, you will of course receive not only the scheduled UDP message, but also the UDP message on value change (door closed or open).
 
 ### 9. ... and some more advanced stuff for the brave ones ...
 The syntax of the UDP log message parsed by my python script looks like this:
