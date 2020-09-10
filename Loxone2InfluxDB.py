@@ -5,13 +5,17 @@
 # hostname and port of InfluxDB http API
 host = '127.0.0.1'
 port = 8086
+# use https for connection to InfluxDB
+ssl = False
+# verify https connection
+verify = False
 # InfluxDB database name
 dbname = 'loxone'
-# InfluxDB login credentials (optional, specify if you enabled authentication)
+# InfluxDB login credentials (optional, specify if you have enabled authentication)
 dbuser = 'some_user'
 dbuser_code = 'some_password'
 # local IP and port where the script is listening for UDP packets from Loxone
-localIP = '192.168.1.22'
+localIP = '192.168.1.222'
 localPort = 2222
 
 
@@ -22,9 +26,13 @@ import re
 from influxdb import InfluxDBClient
 from datetime import datetime
 from dateutil import tz
+# suppress warnings for unverified https request
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Parse received message
-# Example string: "'2017-10-19 11:01:38;Temperatuur Eetruimte;21.7\\xc2\\xb0\\r\\n'"
+# Syntax: <timestamp>;<measurement_name>;<alias(optional)>:<value>;<tag_1(optional)>;<tag_2(optional)>;<tag_3(optional)>
+# Example: "2020-09-10 19:46:20;Bedroom temperature;23.0"
 # ** TO DO ** Need to add checks in case something goes wrong
 #
 def ParseLogData (data, from_zone, to_zone, debug=False):
@@ -33,10 +41,10 @@ def ParseLogData (data, from_zone, to_zone, debug=False):
 		print (data)
 	EndTimestamp  = data.find(b';')
 	EndName       = data.find(b';', EndTimestamp+1)
-	EndCustName = data.find(b':', EndName+1)
-	if EndCustName < 0:		# -1 means not found
-		EndCustName = EndName
-        EndValue      = data.find(b';', EndCustName+1)
+	EndAlias = data.find(b':', EndName+1)
+	if EndAlias < 0:		# -1 means not found
+		EndAlias = EndName
+        EndValue      = data.find(b';', EndAlias+1)
         if EndValue > 0:
                 EndTag1 = data.find(b';', EndValue+1)
         else:
@@ -65,12 +73,12 @@ def ParseLogData (data, from_zone, to_zone, debug=False):
 	# Name Extraction
 	ParsedData['Name']=data[EndTimestamp+1:EndName]
 	
-        # Custom Name Extraction
-        if EndCustName != EndName:
-		ParsedData['Name']=data[EndName+1:EndCustName]
+        # Alias Extraction
+        if EndAlias != EndName:
+		ParsedData['Name']=data[EndName+1:EndAlias]
 
 	# Value Extraction
-	ParsedData['Value']=rx.findall(data[EndCustName+1:EndValue].decode('utf-8'))[0]
+	ParsedData['Value']=rx.findall(data[EndAlias+1:EndValue].decode('utf-8'))[0]
 	
         #Tag_1 Extraction
         ParsedData['Tag_1']=data[EndValue+1:EndTag1].rstrip()
@@ -102,9 +110,9 @@ def ParseLogData (data, from_zone, to_zone, debug=False):
 		
 	return json_body;
 
-def main(host, port, debug=False):
+def main(host, port, ssl, verify, debug=False):
     ## """Instantiate a connection to the InfluxDB."""
-    client = InfluxDBClient(host, port, dbuser, dbuser_code, dbname)
+    client = InfluxDBClient(host, port, dbuser, dbuser_code, dbname, ssl, verify)
 	
     # get TZ info
     to_zone = tz.tzutc()
@@ -114,7 +122,7 @@ def main(host, port, debug=False):
     # Set up a UDP server
     UDPSock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 
-    # Listen on port 21567
+    # Listen on local port
     # (to all IP addresses on this system)
     listen_addr = (localIP,localPort)
     UDPSock.bind(listen_addr)
@@ -138,6 +146,10 @@ def parse_args():
                         help='hostname of InfluxDB http API')
     parser.add_argument('-p', '--port', type=int, required=False, default=port,
                         help='port of InfluxDB http API')
+    parser.add_argument('-s', '--ssl', default=ssl, action="store_true",
+                        help='use https to connect to InfluxDB')
+    parser.add_argument('-v', '--verify', default=verify, action="store_true",
+                        help='verify https connection to InfluxDB')
     parser.add_argument('-d', '--debug', action="store_true",
                         help='debug code')
     parser.add_argument('-?', '--help', action='help',
@@ -148,5 +160,5 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    main(host=args.host, port=args.port, debug=args.debug)
+    main(host=args.host, port=args.port, ssl=args.ssl, verify=args.verify, debug=args.debug)
 
