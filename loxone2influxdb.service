@@ -1,0 +1,15 @@
+[Unit]
+Description=Loxone to InfluxDB Service
+After=network.target
+
+[Service]
+SyslogIdentifier=loxone2influxdb
+Type=simple
+Environment=PYTHONUNBUFFERED=1
+Restart=always
+
+# EDIT PATH TO THE PYTHON SCRIPT!
+ExecStart=/usr/bin/python /etc/loxone2influxdb/Loxone2InfluxDB.py
+
+[Install]
+WantedBy=multi-user.target
