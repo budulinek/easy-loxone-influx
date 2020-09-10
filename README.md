@@ -23,24 +23,32 @@ Configuration at the beginning of the script:
 # hostname and port of InfluxDB http API
 host = '127.0.0.1'
 port = 8086
+# use https for connection to InfluxDB
+ssl = False
+# verify https connection
+verify = False
 # InfluxDB database name
 dbname = 'loxone'
-# InfluxDB login credentials (optional, specify if you enabled authentication)
+# InfluxDB login credentials (optional, specify if you have enabled authentication)
 dbuser = 'some_user'
 dbuser_code = 'some_password'
 # local IP and port where the script is listening for UDP packets from Loxone
 localIP = '192.168.1.222'
 localPort = 2222
 ```
+Alternatively, you can specify some of these variables via optional command line arguments.
+
 ### 3. Run the script
 ```
-usage: Loxone2InfluxDB.py [-h HOST] [-p PORT] [-d] [-?]
+usage: Loxone2InfluxDB.py [-h HOST] [-p PORT] [-s] [-v] [-d] [-?]
 
 Simple Loxone to InfluxDB script
 
 optional arguments:
   -h HOST, --host HOST  hostname of InfluxDB http API
   -p PORT, --port PORT  port of InfluxDB http API
+  -s, --ssl             use https to connect to InfluxDB
+  -v, --verify          verify https connection to InfluxDB
   -d, --debug           debug code
   -?, --help            show this help message and exit
 ```
