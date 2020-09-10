@@ -53,7 +53,7 @@ optional arguments:
   -?, --help            show this help message and exit
 ```
 * Use debug for testing.
-* If everything works as expected, create a systemd service  following this tutorial: https://github.com/torfsen/python-systemd-tutorial
+* If everything works as expected, create a systemd service. You can use ```loxone2influxdb.service``` provided here as a template. Copy (or symlink) the file to ```/etc/systemd/system``` and run ```systemctl enable loxone2influxdb```
 * Remember - the script is not failsafe. It will simply crash if it receives data in wrong format. So you really need systemd service with both autostart and restart after failure.
 
 ### 4. Configure UDP Logger in Loxone
